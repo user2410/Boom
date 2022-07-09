@@ -4,12 +4,12 @@ import actors.Grid;
 import actors.Monster;
 import actors.Tile;
 import main.Game;
+import math.Vector2;
 
 public class Monster1 extends Monster{
 
 	public Monster1(Game game, Grid grid, Tile currentTile) {
 		super(game, grid, currentTile);
-		updateTexture();
 	}
 	
 	@Override
@@ -31,16 +31,15 @@ public class Monster1 extends Monster{
 		}
 		mSprite.setTexture(getGame().getTexture(text));
 	}
-	
+
 	@Override
-	public void react(Tile t) {
-		super.react(t);
-		mPF.setToTile(t);
-		if(mPF.findPath()) {
-			dstTile = mPF.moveNext();
-			mc.setSrc(getPosition());
-			mc.setDst(dstTile.getPosition());
-			mc.move();
-		}
+	protected Vector2 getPlayerPos() {
+		// TODO Auto-generated method stub
+		return mGrid.getPlayer().getPosition();
+	}
+
+	@Override
+	protected void attack() {
+		mGrid.getPlayer().sustain(3.0);
 	}
 }

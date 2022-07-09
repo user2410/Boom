@@ -35,43 +35,35 @@ public class Bomb extends Entity{
 		mCurrentTile.blow();
 		
 		for(int r=1; r<=BLOW_RANGE; r++) {
-			if(i >= r) {
-				Tile t = mGrid.getTile(tnum-r);
-				if(t==null) break;
-				if(!t.isBlowable()) break;
-				if(t.isBlocked()) r = BLOW_RANGE;
-				t.blow();
-			}
+			Tile t = mGrid.getTile(i-r, j);
+			if(t==null) break;
+			if(!t.isBlowable()) break;
+			if(t.isBlocked()) r = BLOW_RANGE;
+			t.blow();
 		}
 		
 		for(int r=1; r<=BLOW_RANGE; r++) {
-			if(i+r < mGrid.NUM_ROWS) {
-				Tile t = mGrid.getTile(tnum+r*mGrid.NUM_COLS);
-				if(t==null) break;
-				if(!t.isBlowable()) break;
-				if(t.isBlocked()) r = BLOW_RANGE;				
-				t.blow();
-			}
+			Tile t = mGrid.getTile(i, j-r);
+			if(t==null) break;
+			if(!t.isBlowable()) break;
+			if(t.isBlocked()) r = BLOW_RANGE;				
+			t.blow();
 		}
 		
 		for(int r=1; r<=BLOW_RANGE; r++) {
-			if(j >= r) {
-				Tile t = mGrid.getTile(tnum-r*mGrid.NUM_COLS);
-				if(t==null) break;
-				if(!t.isBlowable()) break;
-				if(t.isBlocked()) r = BLOW_RANGE;
-				t.blow();
-			}
+			Tile t = mGrid.getTile(i+r, j);
+			if(t==null) break;
+			if(!t.isBlowable()) break;
+			if(t.isBlocked()) r = BLOW_RANGE;
+			t.blow();
 		}
 		
 		for(int r=1; r<=BLOW_RANGE; r++) {
-			if(j+r < mGrid.NUM_COLS) {
-				Tile t = mGrid.getTile(tnum+r);
-				if(t==null) break;
-				if(!t.isBlowable()) break;
-				if(t.isBlocked()) r = BLOW_RANGE;
-				t.blow();
-			}
+			Tile t = mGrid.getTile(i, j+r);
+			if(t==null) break;
+			if(!t.isBlowable()) break;
+			if(t.isBlocked()) r = BLOW_RANGE;
+			t.blow();
 		}
 	}
 	

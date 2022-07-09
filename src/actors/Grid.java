@@ -7,13 +7,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import actors.monsters.Monster1;
+import actors.monsters.Monster2;
 import loader.ResourceLoader;
 import main.Game;
 import math.Vector2;
 
 public class Grid extends Actor{
 
-	public final int PADDING_TOP = 15;
+	public final int PADDING_TOP = 25;
 	public final int PADDING_LEFT = 15;
 	public final int NUM_ROWS = 13;
 	public final int NUM_COLS = 15;
@@ -34,8 +35,8 @@ public class Grid extends Actor{
 			for(int j=0; j<NUM_COLS; j++) {
 				mTiles[i][j] = new Tile(game, i*NUM_COLS + j);
 				mTiles[i][j].setPosition(new Vector2(
-						PADDING_TOP + j*TILE_SIZE, 
-						PADDING_LEFT + i*TILE_SIZE));
+						PADDING_LEFT + j*TILE_SIZE, 
+						PADDING_TOP + i*TILE_SIZE));
 				mTiles[i][j].setOriginalSize(defTileSize);
 			}
 		}
@@ -87,7 +88,8 @@ public class Grid extends Actor{
         	for(int i=0; i<m2; i++) {
         		x = in.readInt();
         		y = in.readInt();
-        		System.out.println("x="+x+", y="+y);
+        		mMonsters.add(new Monster2(getGame(), this, getTile(x, y)));
+        		// System.out.println("x="+x+", y="+y);
         	}
         	in.close();
         } catch (IOException e) {
@@ -142,13 +144,20 @@ public class Grid extends Actor{
 		// up, left, down, right
 		arr.clear();
 		int tnum = t.getTileNum();
-		Tile neighbour = getTile(tnum-NUM_COLS);
+		int i = tnum / NUM_COLS;
+		int j = tnum % NUM_COLS;
+		Tile neighbour = getTile(i-1, j);
 		if(neighbour!=null) if(!neighbour.isBlocked()) arr.add(neighbour);
-		neighbour = getTile(tnum-1);
+		neighbour = getTile(i, j-1);
 		if(neighbour!=null) if(!neighbour.isBlocked()) arr.add(neighbour);
-		neighbour = getTile(tnum+NUM_COLS);
+		neighbour = getTile(i+1, j);
 		if(neighbour!=null) if(!neighbour.isBlocked()) arr.add(neighbour);
-		neighbour = getTile(tnum+1);
+		neighbour = getTile(i, j+1);
 		if(neighbour!=null) if(!neighbour.isBlocked()) arr.add(neighbour);
 	}
+
+	public Player getPlayer() {
+		return mPlayer;
+	}	
+	
 }

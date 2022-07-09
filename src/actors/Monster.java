@@ -1,56 +1,83 @@
 package actors;
 
-import components.MoveComponent;
-import components.PathFindingComponent;
-import main.Game;
+import java.util.ArrayList;
 
-public class Monster extends Entity{
+import components.MoveComponent;
+import main.Game;
+import math.Vector2;
+
+public abstract class Monster extends Entity{
 
 	protected int mDirection;
-	protected PathFindingComponent mPF;
 	protected MoveComponent mc;
-	protected Tile dstTile;
+	protected Tile nextTile;
+	protected ArrayList<Tile> adjTiles;
+	private double attackCooldown;
 	
 	public Monster(Game game, Grid grid, Tile currentTile) {
 		super(game, grid, currentTile);
-		mPF = new PathFindingComponent(this, grid);
 		mDirection = 2;
 		updateTexture();
 		mc = new MoveComponent(this);
-		mc.setSpeed(150.0);
-		dstTile = null;
-		react(grid.mPlayer.getCurrentTile());
+		mc.setSpeed(40.0);
+		adjTiles = new ArrayList<Tile>();
+		attackCooldown = 0.0;
+		pollNextTile();
 	}
 	
 	@Override
 	public void updateActor(double deltaTime) {
 		super.updateActor(deltaTime);
+		attackCooldown -= deltaTime;
+		if(attackCooldown <= 0.0) {
+			if(Vector2.sub(mGrid.mPlayer.getPosition(), getPosition()).length()<=mGrid.TILE_SIZE) {
+				attack();
+				attackCooldown = 0.5;
+			}else {
+				attackCooldown = 0.0;
+			}
+		}
 		mc.update(deltaTime);
 		if(mc.isMoving()) {
 			setPosition(mc.getCurPos());
-		}else if(dstTile != null){
-			setCurrentTile(dstTile);
-			// set next dstTile
-			Tile t = mPF.moveNext();
-			if(t==dstTile) dstTile = null;
-			else if(t!=null){
-				int d = t.getTileNum() - dstTile.getTileNum();
-				if(d == -mGrid.NUM_COLS) mDirection = 0;
-				else if(d == -1) mDirection = 1;
-				else if(d == 1) mDirection = 2;
-				else if(d == mGrid.NUM_COLS) mDirection = 3;
-				updateTexture();
-				dstTile = t;
-				mc.setSrc(getPosition());
-				mc.setDst(dstTile.getPosition());
-				mc.move();
-			}
-			
+		}else if(nextTile != null){
+			mCurrentTile.removeEntity(this);
+			setCurrentTile(nextTile);
+			pollNextTile();
 		}
 	}
 	
-	public void react(Tile t) {
-		mPF.setFromTile(mCurrentTile);
+	protected abstract Vector2 getPlayerPos();
+	
+	protected abstract void attack();
+	
+	protected void pollNextTile() {
+		mGrid.getAdjacentTiles(mCurrentTile, adjTiles);
+		// nextTile = adjTiles.get((int)(Math.random()*adjTiles.size()));
+		Tile t = adjTiles.get(0);
+		double dis = Double.MAX_VALUE;
+		for(Tile _t : adjTiles) {
+			double d = Vector2.sub(_t.getPosition(), getPlayerPos()).length();
+			if(d<dis) {
+				dis = d;
+				t = _t;
+			}
+		}
+		nextTile = t;
+		nextTile.addEntity(this);
+		mc.setSrc(mCurrentTile.getPosition());
+		mc.setDst(nextTile.getPosition());
+		mc.move();
+		changeDirection(mCurrentTile.getTileNum(), nextTile.getTileNum());
+	}
+	
+	protected void changeDirection(int oldt, int newt) {
+		int d = newt - oldt;
+		if(d == -mGrid.NUM_COLS) mDirection = 0;
+		else if(d == -1) mDirection = 1;
+		else if(d == 1) mDirection = 2;
+		else if(d == mGrid.NUM_COLS) mDirection = 3;
+		updateTexture();
 	}
 
 	@Override

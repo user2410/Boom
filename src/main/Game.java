@@ -20,7 +20,7 @@ import object.GameOver;
 public class Game extends Canvas implements Runnable {
 
 	public static final int WIDTH = 750;
-	public static final int HEIGHT = 654;
+	public static final int HEIGHT = 674;
 
 	@SuppressWarnings("unused")
 	private Window mWindow;
