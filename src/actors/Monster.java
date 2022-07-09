@@ -19,7 +19,7 @@ public abstract class Monster extends Entity{
 		mDirection = 2;
 		updateTexture();
 		mc = new MoveComponent(this);
-		mc.setSpeed(40.0);
+		mc.setSpeed(60.0);
 		adjTiles = new ArrayList<Tile>();
 		attackCooldown = 0.0;
 		pollNextTile();
@@ -83,5 +83,6 @@ public abstract class Monster extends Entity{
 	@Override
 	public void die() {
 		super.die();
+		mGrid.mMonsters.remove(this);
 	}
 }

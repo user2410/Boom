@@ -7,8 +7,6 @@ import java.awt.event.KeyEvent;
 import components.MoveComponent;
 import components.SpriteComponent;
 import main.Game;
-// import math.Vector2;
-import math.Vector2;
 
 public class Player extends Entity {
 
@@ -28,20 +26,16 @@ public class Player extends Entity {
 		mc.setSpeed(300.0);
 		dstTile = null;
 		health = 100.0;
-		healthBar = new SpriteComponent(this, 9) {
-			private Vector2 pos = new Vector2(15.0, 5.0);
-			private Vector2 size = new Vector2(720.0, 15.0);
-			
+		healthBar = new SpriteComponent(this, 9) {			
 			@Override
 			public void draw(Graphics g) {
 				g.setColor(Color.RED);
-				g.fillRect((int)pos.x, (int)pos.y, (int)(health/100.0*size.x), (int)(size.y));
+				g.fillRect(grid.PADDING_LEFT, 5, (int)(health/100.0*grid.NUM_COLS*grid.TILE_SIZE), 15);
 			}
 		};
 		bombCooldown = 0.0;
 	}
 
-	@Override
 	public void processKeyBoard(KeyEvent e) {
 		
 		Tile srcTile = mCurrentTile;
@@ -83,7 +77,10 @@ public class Player extends Entity {
 	}
 	
 	public void setBomb() {
-		if(bombCooldown <= 0.0)	new Bomb(getGame(), mGrid, this);
+		if(bombCooldown <= 0.0) {
+			new Bomb(getGame(), mGrid, this);
+			bombCooldown = 3.0;
+		}
 	}
 	
 	@Override

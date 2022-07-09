@@ -109,8 +109,14 @@ public class Grid extends Actor{
 	
 	@Override
 	public void updateActor(double deltaTime) {
-		if(mPlayer.getState() == Actor.State.EDead)
+		if(mPlayer.getState() == Actor.State.EDead) {
+			getGame().mVictory = false;
 			getGame().mGameOver = true;
+		}
+		if(mMonsters.isEmpty()) {
+			getGame().mVictory = true;
+			getGame().mGameOver = true;			
+		}
 	}
 	
 	public void setPlayerTile(int x, int y) {

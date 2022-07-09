@@ -1,6 +1,5 @@
 package actors;
 
-import components.EntitySpriteComponent;
 import main.Game;
 
 public class Bomb extends Entity{
@@ -12,7 +11,6 @@ public class Bomb extends Entity{
 	public Bomb(Game game, Grid grid, Player player) {
 		super(game, grid, player.getCurrentTile());
 		mTimeToLive = 3.0;
-		mSprite = new EntitySpriteComponent(this, grid);
 		mSprite.setDrawOrder(98);
 		mSprite.setTexture(game.getTexture("objects/bomb.gif"));
 	}

@@ -28,6 +28,7 @@ public class Game extends Canvas implements Runnable {
 	private boolean mUpdatingActors;
 	private long mPastTime;
 	public boolean mGameOver;
+	public boolean mVictory;
 
 	private ArrayList<Actor> mActors;
 	private ArrayList<Actor> mPendingActors;
@@ -101,6 +102,8 @@ public class Game extends Canvas implements Runnable {
 		
 		mGameOverItem = new GameOver(this);
 		
+		mGameOver = mVictory = false;
+		
 		System.gc();
 	}
 	
@@ -149,7 +152,7 @@ public class Game extends Canvas implements Runnable {
 		this.requestFocus();
 		while (mIsRunning) {
 			// processInput();
-			if(!mGameOver) {
+			if(!mGameOver && !mVictory) {
 				updateGame();
 			}
 			generateOutput();
@@ -207,7 +210,7 @@ public class Game extends Canvas implements Runnable {
 		}
 
 		if(mGameOver) {
-			mGameOverItem.draw(g);
+			mGameOverItem.draw(g, mVictory);
 		}
 		
 		
