@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import actors.monsters.Monster1;
 import loader.ResourceLoader;
 import main.Game;
 import math.Vector2;
@@ -20,7 +21,9 @@ public class Grid extends Actor{
 	
 	private Tile[][] mTiles;
 	
-	private Player mPlayer;
+	Player mPlayer;
+	
+	ArrayList<Monster> mMonsters;
 	
 	public Grid(Game game) {
 		super(game);
@@ -36,6 +39,8 @@ public class Grid extends Actor{
 				mTiles[i][j].setOriginalSize(defTileSize);
 			}
 		}
+		
+		mMonsters = new ArrayList<Monster>();
 	}
 
 	// Load from .map file
@@ -65,6 +70,25 @@ public class Grid extends Actor{
     			}
         	}
         	
+        	int x = in.readInt();
+        	int y = in.readInt();
+       	
+        	mPlayer = new Player(getGame(), this, getTile(x, y));
+        	
+        	int m1 = in.readInt();
+        	for(int i=0; i<m1; i++) {
+        		x = in.readInt();
+        		y = in.readInt();
+        		mMonsters.add(new Monster1(getGame(), this, getTile(x, y)));
+        		// System.out.println("x="+x+", y="+y);
+        	}
+
+        	int m2 = in.readInt();
+        	for(int i=0; i<m2; i++) {
+        		x = in.readInt();
+        		y = in.readInt();
+        		System.out.println("x="+x+", y="+y);
+        	}
         	in.close();
         } catch (IOException e) {
 			e.printStackTrace();
@@ -87,10 +111,6 @@ public class Grid extends Actor{
 			getGame().mGameOver = true;
 	}
 	
-	public void setPlayer(Player player) {
-		mPlayer = player;
-	}
-	
 	public void setPlayerTile(int x, int y) {
 		if((x>=0 && x<NUM_COLS) && (y>=0 && y<NUM_ROWS)) {
 			mPlayer.setCurrentTile(mTiles[x][y]);
@@ -103,10 +123,8 @@ public class Grid extends Actor{
 		return NUM_ROWS*NUM_COLS;
 	}
 	
-	public Tile getTile(int tileNum) {
+	public Tile getTile(int i, int j) {
 		Tile t = null;
-		int i = tileNum / NUM_COLS;
-		int j = tileNum % NUM_COLS;
 		if((i>=0 && i<NUM_ROWS) &&
 				(j>=0 && j<NUM_COLS)) {
 			t = mTiles[i][j];
@@ -114,17 +132,23 @@ public class Grid extends Actor{
 		return t;
 	}
 	
+	public Tile getTile(int tileNum) {
+		int i = tileNum / NUM_COLS;
+		int j = tileNum % NUM_COLS;
+		return getTile(i,j);
+	}
+	
 	public void getAdjacentTiles(Tile t, ArrayList<Tile> arr) {
 		// up, left, down, right
 		arr.clear();
 		int tnum = t.getTileNum();
 		Tile neighbour = getTile(tnum-NUM_COLS);
-		if(neighbour!=null) arr.add(neighbour);
+		if(neighbour!=null) if(!neighbour.isBlocked()) arr.add(neighbour);
 		neighbour = getTile(tnum-1);
-		if(neighbour!=null) arr.add(neighbour);
+		if(neighbour!=null) if(!neighbour.isBlocked()) arr.add(neighbour);
 		neighbour = getTile(tnum+NUM_COLS);
-		if(neighbour!=null) arr.add(neighbour);
+		if(neighbour!=null) if(!neighbour.isBlocked()) arr.add(neighbour);
 		neighbour = getTile(tnum+1);
-		if(neighbour!=null) arr.add(neighbour);
+		if(neighbour!=null) if(!neighbour.isBlocked()) arr.add(neighbour);
 	}
 }

@@ -12,19 +12,13 @@ public class Player extends Entity {
 	private MoveComponent mc;
 	private Tile dstTile;
 	
-	public Player(Game game, Grid grid) {
-		super(game, grid, grid.getTile(0));
+	public Player(Game game, Grid grid, Tile currentTile) {
+		super(game, grid, currentTile);
 		mDirection = 2;
-		grid.setPlayer(this);
 		updateTexture();
 		mc = new MoveComponent(this);
 		mc.setSpeed(300.0);
 		dstTile = null;
-	}
-	
-	public Player(Game game, Grid grid, Tile currentTile) {
-		super(game, grid, currentTile);
-		setCurrentTile(currentTile);
 	}
 
 	@Override
@@ -80,6 +74,7 @@ public class Player extends Entity {
 			setPosition(mc.getCurPos());
 		}else if(dstTile != null){
 			setCurrentTile(dstTile);
+			notifyMonsters();
 			dstTile = null;
 		}
 	}
@@ -102,6 +97,10 @@ public class Player extends Entity {
 			break;
 		}
 		mSprite.setTexture(getGame().getTexture(text));
+	}
+	
+	private void notifyMonsters() {
+		mGrid.mMonsters.forEach(m->m.react(mCurrentTile));
 	}
 	
 	@Override

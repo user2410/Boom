@@ -99,9 +99,6 @@ public class Game extends Canvas implements Runnable {
 		mGrid = new Grid(this);
 		mGrid.loadMap("maps/map01.dat");
 		
-		new Player(this, mGrid);
-		// mGrid.setPlayerTile(0, 0);
-		
 		mGameOverItem = new GameOver(this);
 		
 		System.gc();
