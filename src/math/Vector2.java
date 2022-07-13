@@ -43,4 +43,12 @@ public class Vector2 {
 		y /= length;
 	}
 	
+	@Override
+	public boolean equals(Object o) {
+		if(o instanceof Vector2) {
+			return ((Vector2)o).x == this.x && ((Vector2)o).y == this.y;
+		}
+		return false;
+	}
+	
 }

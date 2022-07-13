@@ -1,11 +1,3 @@
-/******************************************************************************
-
-                            Online C Compiler.
-                Code, Compile, Run and Debug C program online.
-Write your code in this editor and press "Run" button to compile and execute it.
-
-*******************************************************************************/
-
 #include <stdio.h>
 
 int readInt(FILE* fp){
@@ -29,7 +21,12 @@ void writeInt(int x, FILE* fp){
 int main()
 {
     FILE* dat = fopen("map01.dat", "wb");
-    int arr[13][15] = {
+    // mxn map
+    const int m=13;
+    const int n=15;
+    writeInt(m, dat); writeInt(n, dat);
+    
+    int arr[m][n] = {
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {0,1,1,1,1,1,0,0,0,1,1,1,1,1,0},
         {0,1,3,3,3,1,0,0,0,1,3,3,3,1,0},
@@ -44,8 +41,8 @@ int main()
         {0,1,1,1,1,1,0,0,0,1,1,1,1,1,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
     };
-    for(int i=0; i<13; i++){
-        for(int j=0; j<15; j++) writeInt(arr[i][j], dat);
+    for(int i=0; i<m; i++){
+        for(int j=0; j<n; j++) writeInt(arr[i][j], dat);
     }
     // player
     writeInt(0, dat); writeInt(0, dat);

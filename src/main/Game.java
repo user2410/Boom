@@ -86,25 +86,34 @@ public class Game extends Canvas implements Runnable {
 		});
 
 		mPastTime = System.nanoTime();
+		
+		mGameOverItem = new GameOver(this);
 
-		loadData();
+		if(!loadData()) return false;
 
 		return true;
 	}
 	
-	private void loadData() {
+	private boolean loadData() {
 		mActors.clear();
 		mPendingActors.clear();
 		mSprites.clear();
 		
-		mGrid = new Grid(this);
-		mGrid.loadMap("maps/map01.dat");
-		
-		mGameOverItem = new GameOver(this);
+		mGrid = Grid.makeGrid(this, "maps/map01.dat");
+		if(mGrid == null) {
+			return false;
+		}
 		
 		mGameOver = mVictory = false;
 		
+		mWindow._resize(
+				(int)(mGrid.getncols()*Grid.TILE_SIZE)+Grid.PADDING_LEFT+Grid.PADDING_RIGHT, 
+				(int)(mGrid.getnrows()*Grid.TILE_SIZE)+Grid.PADDING_TOP+Grid.PADDING_BOTTOM 
+		);
+		
 		System.gc();
+		
+		return true;
 	}
 	
 	public void addActor(Actor actor) {
@@ -203,7 +212,7 @@ public class Game extends Canvas implements Runnable {
 		
 		// clear background
 		g.setColor(Color.WHITE);
-		g.fillRect(0, 0, WIDTH, HEIGHT);
+		g.fillRect(0, 0, mWindow.getWidth(), mWindow.getHeight());
 		
 		for(int i=0; i<mSprites.size(); i++) {
 			mSprites.get(i).draw(g);

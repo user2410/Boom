@@ -26,8 +26,8 @@ public class Bomb extends Entity{
 	private void blow() {
 		// get all adjacent tiles
 		int tnum = mCurrentTile.getTileNum();
-		int i = tnum / mGrid.NUM_COLS;
-		int j = tnum % mGrid.NUM_COLS;
+		int i = tnum / mGrid.getncols();
+		int j = tnum % mGrid.getncols();
 		
 		mCurrentTile.removeEntity(this);
 		mCurrentTile.blow();

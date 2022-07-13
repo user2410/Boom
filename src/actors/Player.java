@@ -9,6 +9,9 @@ import components.SpriteComponent;
 import main.Game;
 
 public class Player extends Entity {
+	
+	public final int HEALTHBAR_Y = 5;
+	public final int HEALTHBAR_HEIGHT = 15;
 
 	private int mDirection;
 	private MoveComponent mc;
@@ -23,14 +26,14 @@ public class Player extends Entity {
 		mDirection = 2;
 		updateTexture();
 		mc = new MoveComponent(this);
-		mc.setSpeed(300.0);
+		mc.setSpeed(240.0);
 		dstTile = null;
 		health = 100.0;
 		healthBar = new SpriteComponent(this, 9) {			
 			@Override
 			public void draw(Graphics g) {
 				g.setColor(Color.RED);
-				g.fillRect(grid.PADDING_LEFT, 5, (int)(health/100.0*grid.NUM_COLS*grid.TILE_SIZE), 15);
+				g.fillRect(Grid.PADDING_LEFT, HEALTHBAR_Y, (int)(health/100.0*grid.getncols()*Grid.TILE_SIZE), HEALTHBAR_HEIGHT);
 			}
 		};
 		bombCooldown = 0.0;
@@ -39,13 +42,13 @@ public class Player extends Entity {
 	public void processKeyBoard(KeyEvent e) {
 		
 		Tile srcTile = mCurrentTile;
-		int i = srcTile.getTileNum() / mGrid.NUM_COLS;
-		int j = srcTile.getTileNum() % mGrid.NUM_COLS;
+		int i = srcTile.getTileNum() / mGrid.getncols();
+		int j = srcTile.getTileNum() % mGrid.getncols();
 		int moved = 0;
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_W:
 			mDirection = 0;
-			if(i>0) moved = -mGrid.NUM_COLS;
+			if(i>0) moved = -mGrid.getncols();
 			break;
 		case KeyEvent.VK_A:
 			mDirection = 1;
@@ -53,11 +56,11 @@ public class Player extends Entity {
 			break;
 		case KeyEvent.VK_S:
 			mDirection = 2;
-			if(i+1<mGrid.NUM_ROWS) moved = mGrid.NUM_COLS;
+			if(i+1<mGrid.getnrows()) moved = mGrid.getncols();
 			break;
 		case KeyEvent.VK_D:
 			mDirection = 3;
-			if(j+1<mGrid.NUM_COLS) moved = 1;
+			if(j+1<mGrid.getncols()) moved = 1;
 			break;
 		default:
 		}

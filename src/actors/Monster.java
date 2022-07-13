@@ -30,7 +30,7 @@ public abstract class Monster extends Entity{
 		super.updateActor(deltaTime);
 		attackCooldown -= deltaTime;
 		if(attackCooldown <= 0.0) {
-			if(Vector2.sub(mGrid.mPlayer.getPosition(), getPosition()).length()<=mGrid.TILE_SIZE) {
+			if(Vector2.sub(mGrid.mPlayer.getPosition(), getPosition()).length()<=Grid.TILE_SIZE) {
 				attack();
 				attackCooldown = 0.5;
 			}else {
@@ -73,10 +73,10 @@ public abstract class Monster extends Entity{
 	
 	protected void changeDirection(int oldt, int newt) {
 		int d = newt - oldt;
-		if(d == -mGrid.NUM_COLS) mDirection = 0;
+		if(d == -mGrid.getncols()) mDirection = 0;
 		else if(d == -1) mDirection = 1;
 		else if(d == 1) mDirection = 2;
-		else if(d == mGrid.NUM_COLS) mDirection = 3;
+		else if(d == mGrid.getncols()) mDirection = 3;
 		updateTexture();
 	}
 

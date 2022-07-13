@@ -30,8 +30,8 @@ public class Entity extends Actor {
 					int width = (int)(mTexWidth*scale);
 					int height = (int)(mTexHeight*scale);
 					g.drawImage(mTexture,
-								(int)(pos.x + ((grid.TILE_SIZE - mTexWidth)/2.0)),
-								(int)(pos.y - mTexHeight + grid.TILE_SIZE), 
+								(int)(pos.x + ((Grid.TILE_SIZE - mTexWidth)/2.0)),
+								(int)(pos.y - mTexHeight + Grid.TILE_SIZE), 
 								width, height, null);
 				}
 			}

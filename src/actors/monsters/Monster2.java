@@ -42,10 +42,10 @@ public class Monster2 extends Monster {
 		
 		switch(playerDirection) {
 		case 0:
-			t = mGrid.getTile(playerTileNum-mGrid.NUM_COLS); 
+			t = mGrid.getTile(playerTileNum-mGrid.getncols()); 
 			if(t!=null) {
 				dstTile = t;
-				t = mGrid.getTile(t.getTileNum()-mGrid.NUM_COLS);
+				t = mGrid.getTile(t.getTileNum()-mGrid.getncols());
 				if(t!=null)  dstTile = t;
 			}
 			break;
@@ -58,10 +58,10 @@ public class Monster2 extends Monster {
 			}
 			break;
 		case 2:
-			t = mGrid.getTile(playerTileNum+mGrid.NUM_COLS); 
+			t = mGrid.getTile(playerTileNum+mGrid.getncols()); 
 			if(t!=null) {
 				dstTile = t;
-				t = mGrid.getTile(t.getTileNum()+mGrid.NUM_COLS);
+				t = mGrid.getTile(t.getTileNum()+mGrid.getncols());
 				if(t!=null)  dstTile = t;
 			}
 			break;

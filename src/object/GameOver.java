@@ -13,15 +13,17 @@ public class GameOver {
 	
 	public GameOver(Game game) {
 		mGameOverImage = game.getTexture("gameover.png");
-		mVictoryImage = game.getTexture("fatality.png");
+		mVictoryImage = game.getTexture("victory.png");
 		mReplayBtn = new Button(game, "playbutton.png");
 	}
 	
 	public void draw(Graphics g, boolean win) {
 		if(win) {
 			g.drawImage(mVictoryImage,
-					(Game.WIDTH-mVictoryImage.getWidth())>>1,
-					(Game.HEIGHT-3*mVictoryImage.getHeight())>>1,
+					(Game.WIDTH-mGameOverImage.getWidth())>>1,
+					(Game.HEIGHT-3*mGameOverImage.getHeight())>>1,
+					mGameOverImage.getWidth(),
+					mGameOverImage.getHeight(),					
 					null);			
 		}else {
 			g.drawImage(mGameOverImage,

@@ -14,11 +14,13 @@ import math.Vector2;
 
 public class Grid extends Actor{
 
-	public final int PADDING_TOP = 25;
-	public final int PADDING_LEFT = 15;
-	public final int NUM_ROWS = 13;
-	public final int NUM_COLS = 15;
-	public final double TILE_SIZE = 48.0;
+	public static final int PADDING_TOP = 25;
+	public static final int PADDING_BOTTOM = 25;
+	public static final int PADDING_LEFT = 15;
+	public static final int PADDING_RIGHT = 15;
+	public static final double TILE_SIZE = 48.0;
+	private int NUM_COLS;
+	private int NUM_ROWS;
 	
 	private Tile[][] mTiles;
 	
@@ -26,75 +28,88 @@ public class Grid extends Actor{
 	
 	ArrayList<Monster> mMonsters;
 	
-	public Grid(Game game) {
+	private Grid(Game game) {
 		super(game);
-		
-		Vector2 defTileSize = new Vector2(TILE_SIZE, TILE_SIZE);
-		mTiles = new Tile[NUM_ROWS][NUM_COLS];
-		for(int i=0; i<NUM_ROWS; i++) {
-			for(int j=0; j<NUM_COLS; j++) {
-				mTiles[i][j] = new Tile(game, i*NUM_COLS + j);
-				mTiles[i][j].setPosition(new Vector2(
-						PADDING_LEFT + j*TILE_SIZE, 
-						PADDING_TOP + i*TILE_SIZE));
-				mTiles[i][j].setOriginalSize(defTileSize);
-			}
-		}
-		
-		mMonsters = new ArrayList<Monster>();
 	}
-
-	// Load from .map file
-	public void loadMap(String filepath) {
-        try{
-        	InputStream is = ResourceLoader.load("/" + filepath);
+	
+	public static Grid makeGrid(Game game, String mapfile) {
+		Grid g = new Grid(game);
+		
+		// Load from .map file
+		try{
+        	InputStream is = ResourceLoader.load("/" + mapfile);
         	if(is == null) throw new IOException();
         	DataInputStream in = new DataInputStream(is);
         	
-        	for(int i=0; i<NUM_ROWS; i++) {
-    			for(int j=0; j<NUM_COLS; j++) {
+        	// load map size
+        	g.NUM_ROWS = in.readInt();
+        	g.NUM_COLS = in.readInt();
+        	// System.out.println("m = " + g.NUM_ROWS + "; n = " + g.NUM_COLS);
+        	
+        	// init tile map
+        	g.mTiles = new Tile[g.NUM_ROWS][g.NUM_COLS];
+    		Vector2 defTileSize = new Vector2(TILE_SIZE, TILE_SIZE);
+
+    		g.mMonsters = new ArrayList<Monster>();
+    		
+        	// load each tile
+        	for(int i=0; i<g.NUM_ROWS; i++) {
+    			for(int j=0; j<g.NUM_COLS; j++) {
+    				g.mTiles[i][j] = new Tile(game, i*g.NUM_COLS + j);
+    				g.mTiles[i][j].setPosition(new Vector2(
+    						PADDING_LEFT + j*TILE_SIZE, 
+    						PADDING_TOP + i*TILE_SIZE));
+    				g.mTiles[i][j].setOriginalSize(defTileSize);
     				int type = in.readInt();
+    				// System.out.print(""+type+",");
     				switch(type%4) {
     				case 0:
-    					mTiles[i][j].setTileState(Tile.TileState.EDefault);
+    					g.mTiles[i][j].setTileState(Tile.TileState.EDefault);
     					break;
     				case 1:
-    					mTiles[i][j].setTileState(Tile.TileState.EBoxSat);
+    					g.mTiles[i][j].setTileState(Tile.TileState.EBoxSat);
     					break;
     				case 2:
-    					mTiles[i][j].setTileState(Tile.TileState.EBoxGo);
+    					g.mTiles[i][j].setTileState(Tile.TileState.EBoxGo);
     					break;
     				case 3:
-    					mTiles[i][j].setTileState(Tile.TileState.EBoxGo2);
+    					g.mTiles[i][j].setTileState(Tile.TileState.EBoxGo2);
     					break;
     				}
     			}
+    			// System.out.println("");
         	}
         	
+        	// load player's initial tile
         	int x = in.readInt();
         	int y = in.readInt();
        	
-        	mPlayer = new Player(getGame(), this, getTile(x, y));
+        	g.mPlayer = new Player(g.getGame(), g, g.getTile(x, y));
         	
+        	// load type-1 monsters position
         	int m1 = in.readInt();
         	for(int i=0; i<m1; i++) {
         		x = in.readInt();
         		y = in.readInt();
-        		mMonsters.add(new Monster1(getGame(), this, getTile(x, y)));
+        		g.mMonsters.add(new Monster1(g.getGame(), g, g.getTile(x, y)));
         		// System.out.println("x="+x+", y="+y);
         	}
 
+        	// load type-2 monsters position
         	int m2 = in.readInt();
         	for(int i=0; i<m2; i++) {
         		x = in.readInt();
         		y = in.readInt();
-        		mMonsters.add(new Monster2(getGame(), this, getTile(x, y)));
+        		g.mMonsters.add(new Monster2(g.getGame(), g, g.getTile(x, y)));
         		// System.out.println("x="+x+", y="+y);
         	}
         	in.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
+		
+		return g;
 	}
 	
 	public synchronized void processKeyboard(KeyEvent e) {
@@ -131,6 +146,14 @@ public class Grid extends Actor{
 		return NUM_ROWS*NUM_COLS;
 	}
 	
+	public int getncols() {
+		return NUM_COLS;
+	}
+
+	public int getnrows() {
+		return NUM_ROWS;
+	}
+
 	public Tile getTile(int i, int j) {
 		Tile t = null;
 		if((i>=0 && i<NUM_ROWS) &&
