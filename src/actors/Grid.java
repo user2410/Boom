@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import actors.monsters.Monster1;
 import actors.monsters.Monster2;
 import loader.ResourceLoader;
-import main.Game;
 import math.Vector2;
+import scene.MainGameScene;
 
 public class Grid extends Actor{
 
@@ -24,16 +24,22 @@ public class Grid extends Actor{
 	
 	private Tile[][] mTiles;
 	
+	// initial grid state
+	private int[][] mTileInit;
+	private int mPlayerXInit, mPlayerYInit;
+	private int[][] mMonster1Init;
+	private int[][] mMonster2Init;
+	
 	Player mPlayer;
 	
 	ArrayList<Monster> mMonsters;
 	
-	private Grid(Game game) {
-		super(game);
+	private Grid(MainGameScene scene) {
+		super(scene);
 	}
 	
-	public static Grid makeGrid(Game game, String mapfile) {
-		Grid g = new Grid(game);
+	public static Grid makeGrid(MainGameScene scene, String mapfile) {
+		Grid g = new Grid(scene);
 		
 		// Load from .map file
 		try{
@@ -44,25 +50,27 @@ public class Grid extends Actor{
         	// load map size
         	g.NUM_ROWS = in.readInt();
         	g.NUM_COLS = in.readInt();
+        	g.mTileInit = new int[g.NUM_ROWS][g.NUM_COLS];
         	// System.out.println("m = " + g.NUM_ROWS + "; n = " + g.NUM_COLS);
         	
         	// init tile map
         	g.mTiles = new Tile[g.NUM_ROWS][g.NUM_COLS];
     		Vector2 defTileSize = new Vector2(TILE_SIZE, TILE_SIZE);
-
-    		g.mMonsters = new ArrayList<Monster>();
     		
         	// load each tile
         	for(int i=0; i<g.NUM_ROWS; i++) {
     			for(int j=0; j<g.NUM_COLS; j++) {
-    				g.mTiles[i][j] = new Tile(game, i*g.NUM_COLS + j);
+    				g.mTiles[i][j] = new Tile(scene, i*g.NUM_COLS + j);
     				g.mTiles[i][j].setPosition(new Vector2(
     						PADDING_LEFT + j*TILE_SIZE, 
     						PADDING_TOP + i*TILE_SIZE));
     				g.mTiles[i][j].setOriginalSize(defTileSize);
-    				int type = in.readInt();
+    				
+    				int type = in.readInt()%4;
+    				g.mTileInit[i][j] = type;
+    				
     				// System.out.print(""+type+",");
-    				switch(type%4) {
+    				switch(type) {
     				case 0:
     					g.mTiles[i][j].setTileState(Tile.TileState.EDefault);
     					break;
@@ -80,27 +88,37 @@ public class Grid extends Actor{
     			// System.out.println("");
         	}
         	
+    		g.mMonsters = new ArrayList<Monster>();
+    		
         	// load player's initial tile
         	int x = in.readInt();
         	int y = in.readInt();
+        	g.mPlayerXInit = x;
+        	g.mPlayerYInit = y;
        	
-        	g.mPlayer = new Player(g.getGame(), g, g.getTile(x, y));
+        	g.mPlayer = new Player(scene, g, g.getTile(x, y));
         	
         	// load type-1 monsters position
         	int m1 = in.readInt();
+        	g.mMonster1Init = new int[m1][2];
         	for(int i=0; i<m1; i++) {
         		x = in.readInt();
         		y = in.readInt();
-        		g.mMonsters.add(new Monster1(g.getGame(), g, g.getTile(x, y)));
+        		g.mMonster1Init[i][0] = x;
+        		g.mMonster1Init[i][1] = y;
+        		g.mMonsters.add(new Monster1(scene, g, g.getTile(x, y)));
         		// System.out.println("x="+x+", y="+y);
         	}
 
         	// load type-2 monsters position
         	int m2 = in.readInt();
+        	g.mMonster2Init = new int[m2][2];
         	for(int i=0; i<m2; i++) {
         		x = in.readInt();
         		y = in.readInt();
-        		g.mMonsters.add(new Monster2(g.getGame(), g, g.getTile(x, y)));
+        		g.mMonster2Init[i][0] = x;
+        		g.mMonster2Init[i][1] = y;
+        		g.mMonsters.add(new Monster2(scene, g, g.getTile(x, y)));
         		// System.out.println("x="+x+", y="+y);
         	}
         	in.close();
@@ -110,6 +128,41 @@ public class Grid extends Actor{
 		}
 		
 		return g;
+	}
+	
+	public void resetGrid() {
+		// reset tiles
+		for(int i=0; i<NUM_ROWS; i++) {
+			for(int j=0; j<NUM_COLS; j++) {
+				mTiles[i][j].clear();
+				switch(mTileInit[i][j]) {
+				case 0:
+					mTiles[i][j].setTileState(Tile.TileState.EDefault);
+					break;
+				case 1:
+					mTiles[i][j].setTileState(Tile.TileState.EBoxSat);
+					break;
+				case 2:
+					mTiles[i][j].setTileState(Tile.TileState.EBoxGo);
+					break;
+				case 3:
+					mTiles[i][j].setTileState(Tile.TileState.EBoxGo2);
+					break;
+				}
+			}
+		}
+		
+		// reset player
+		mPlayer = new Player((MainGameScene)getScene(), this, getTile(mPlayerXInit, mPlayerYInit));
+		
+		// reset monsters
+		mMonsters.clear();
+		for(int i=0; i<mMonster1Init.length; i++) {
+			mMonsters.add(new Monster1((MainGameScene)getScene(), this, getTile(mMonster1Init[i][0], mMonster1Init[i][1])));
+		}
+		for(int i=0; i<mMonster2Init.length; i++) {
+			mMonsters.add(new Monster2((MainGameScene)getScene(), this, getTile(mMonster2Init[i][0], mMonster2Init[i][1])));
+		}
 	}
 	
 	public synchronized void processKeyboard(KeyEvent e) {
@@ -125,12 +178,10 @@ public class Grid extends Actor{
 	@Override
 	public void updateActor(double deltaTime) {
 		if(mPlayer.getState() == Actor.State.EDead) {
-			getGame().mVictory = false;
-			getGame().mGameOver = true;
+			((MainGameScene)getScene()).endGame(false);
 		}
 		if(mMonsters.isEmpty()) {
-			getGame().mVictory = true;
-			getGame().mGameOver = true;			
+			((MainGameScene)getScene()).endGame(true);		
 		}
 	}
 	

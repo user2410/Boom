@@ -3,13 +3,13 @@ package actors.monsters;
 import actors.Grid;
 import actors.Monster;
 import actors.Tile;
-import main.Game;
 import math.Vector2;
+import scene.MainGameScene;
 
 public class Monster1 extends Monster{
 
-	public Monster1(Game game, Grid grid, Tile currentTile) {
-		super(game, grid, currentTile);
+	public Monster1(MainGameScene scene, Grid grid, Tile currentTile) {
+		super(scene, grid, currentTile);
 	}
 	
 	@Override
@@ -29,7 +29,7 @@ public class Monster1 extends Monster{
 			text = "monster/quaivat1_right.png";
 			break;
 		}
-		mSprite.setTexture(getGame().getTexture(text));
+		mSprite.setTexture(getScene().getTexture(text));
 	}
 
 	@Override

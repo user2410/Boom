@@ -3,11 +3,10 @@ package actors;
 import java.awt.Graphics;
 
 import components.SpriteComponent;
-import main.Game;
-// import math.Vector2;
 import math.Vector2;
+import scene.MainGameScene;
 
-public class Entity extends Actor {
+public abstract class GridEntity extends Actor {
 
 	protected Grid mGrid;
 	protected Tile mCurrentTile;
@@ -16,8 +15,8 @@ public class Entity extends Actor {
 	
 	protected SpriteComponent mSprite;
 	
-	public Entity(Game game, Grid grid, Tile currentTile) {
-		super(game);
+	public GridEntity(MainGameScene scene, Grid grid, Tile currentTile) {
+		super(scene);
 		mGrid = grid;
 		setCurrentTile(currentTile);
 		currentTile.addEntity(this);
@@ -43,7 +42,7 @@ public class Entity extends Actor {
 	
 	public void die() {
 		setState(Actor.State.EDead);
-		getGame().removeSprite(mSprite);
+		getScene().removeSprite(mSprite);
 	}
 
 	

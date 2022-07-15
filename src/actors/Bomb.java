@@ -1,18 +1,18 @@
 package actors;
 
-import main.Game;
+import scene.MainGameScene;
 
-public class Bomb extends Entity{
+public class Bomb extends GridEntity{
 
 	private Player mOwner;
 	private final int BLOW_RANGE = 2;
 	private double mTimeToLive;
 	
-	public Bomb(Game game, Grid grid, Player player) {
-		super(game, grid, player.getCurrentTile());
+	public Bomb(MainGameScene scene, Grid grid, Player player) {
+		super(scene, grid, player.getCurrentTile());
 		mTimeToLive = 3.0;
 		mSprite.setDrawOrder(98);
-		mSprite.setTexture(game.getTexture("objects/bomb.gif"));
+		mSprite.setTexture(scene.getTexture("objects/bomb.gif"));
 	}
 
 	@Override

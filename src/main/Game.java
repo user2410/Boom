@@ -1,6 +1,5 @@
 package main;
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -11,55 +10,43 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import actors.*;
-import components.SpriteComponent;
 import loader.GraphicsLoader;
-import object.GameOver;
+import scene.MainGameScene;
+import scene.Scene;
 
 @SuppressWarnings("serial")
 public class Game extends Canvas implements Runnable {
 
-	public static final int WIDTH = 750;
-	public static final int HEIGHT = 674;
+	public static final int PREF_WIDTH = 750;
+	public static final int PREF_HEIGHT = 674;
 
 	@SuppressWarnings("unused")
 	private Window mWindow;
 	private boolean mIsRunning;
-	private boolean mUpdatingActors;
 	private long mPastTime;
 	public boolean mGameOver;
-	public boolean mVictory;
 
-	private ArrayList<Actor> mActors;
-	private ArrayList<Actor> mPendingActors;
+	private ArrayList<Scene> mScenes;
+	private int mCurrentScene;
 	private HashMap<String, BufferedImage> mTextures;
-	private ArrayList<SpriteComponent> mSprites;
-	
-	// Game specific
-	private Grid mGrid; 
-	private GameOver mGameOverItem;
 	
 	public Game() {
 		mWindow = null;
 		mIsRunning = true;
-		mUpdatingActors = false;
-		mActors = new ArrayList<Actor>();
-		mPendingActors = new ArrayList<Actor>();
 		mTextures = new HashMap<String, BufferedImage>();
-		mSprites = new ArrayList<SpriteComponent>();
+		mScenes = new ArrayList<Scene>();
 	}
 
 	public boolean init() {
-		mWindow = new Window("Boom2d", WIDTH, HEIGHT, this);
+		mWindow = new Window("Boom2d", PREF_WIDTH, PREF_HEIGHT, this);
 
 		addKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent e) {}
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if(!mGameOver) {
-					mGrid.processKeyboard(e);
-				}
+				Scene scene = mScenes.get(mCurrentScene);
+				scene.processKeyboard(e);
 			}
 			@Override
 			public void keyReleased(KeyEvent e) {}
@@ -70,12 +57,8 @@ public class Game extends Canvas implements Runnable {
 			public void mouseClicked(MouseEvent e) {}
 			@Override
 			public void mousePressed(MouseEvent e) {
-				if(mGameOver) {
-					if(mGameOverItem.mReplayBtn.checkClicked(e.getX(), e.getY())) {
-						loadData();
-						mGameOver = false;
-					}
-				}
+				Scene scene = mScenes.get(mCurrentScene);
+				scene.processMouseClick(e.getX(), e.getY());
 			}
 			@Override
 			public void mouseReleased(MouseEvent e) {}
@@ -86,47 +69,16 @@ public class Game extends Canvas implements Runnable {
 		});
 
 		mPastTime = System.nanoTime();
-		
-		mGameOverItem = new GameOver(this);
 
-		if(!loadData()) return false;
-
-		return true;
+		return loadData();
 	}
 	
 	private boolean loadData() {
-		mActors.clear();
-		mPendingActors.clear();
-		mSprites.clear();
-		
-		mGrid = Grid.makeGrid(this, "maps/map01.dat");
-		if(mGrid == null) {
-			return false;
-		}
-		
-		mGameOver = mVictory = false;
-		
-		mWindow._resize(
-				(int)(mGrid.getncols()*Grid.TILE_SIZE)+Grid.PADDING_LEFT+Grid.PADDING_RIGHT, 
-				(int)(mGrid.getnrows()*Grid.TILE_SIZE)+Grid.PADDING_TOP+Grid.PADDING_BOTTOM 
-		);
-		
-		System.gc();
-		
+		Scene scene2 = new MainGameScene(this);
+		if(!scene2.init()) return false;
+		mScenes.add(scene2);
+		mCurrentScene = 0;
 		return true;
-	}
-	
-	public void addActor(Actor actor) {
-		if(mUpdatingActors) {
-			mPendingActors.add(actor);
-		}else {
-			mActors.add(actor);
-		}
-	}
-	
-	public void removeActor(Actor actor) {
-		mPendingActors.remove(actor);
-		mActors.remove(actor);
 	}
 	
 	public BufferedImage getTexture(String filename) {
@@ -142,28 +94,12 @@ public class Game extends Canvas implements Runnable {
 		return bi;
 	}
 	
-	public void addSprite(SpriteComponent sprite) {
-		int myDrawOrder = sprite.getDrawOrder();
-		int i=0;
-		for(; i<mSprites.size(); i++) {
-			if(myDrawOrder < mSprites.get(i).getDrawOrder())
-				break;
-		}
-		mSprites.add(i, sprite);
-	}
-	
-	public void removeSprite(SpriteComponent sprite) {
-		mSprites.remove(sprite);
-	}
-	
 	@Override
 	public void run() {
 		this.requestFocus();
 		while (mIsRunning) {
 			// processInput();
-			if(!mGameOver && !mVictory) {
-				updateGame();
-			}
+			updateGame();
 			generateOutput();
 		}
 
@@ -179,25 +115,8 @@ public class Game extends Canvas implements Runnable {
 		}
 		mPastTime = System.nanoTime();
 		
-		mUpdatingActors = true;
-		for(Actor actor : mActors) {
-			actor.update(deltaTime);
-		}
-		mUpdatingActors = false;
-		
-		for(Actor actor : mPendingActors) {
-			mActors.add(actor);
-		}
-		mPendingActors.clear();
-		
-		for(int i=0; i<mActors.size(); i++) {
-			Actor actor = mActors.get(i);
-			if(actor.getState() == Actor.State.EDead) {
-				try{
-					mActors.remove(i--);
-				}catch(Exception e){}
-			}
-		}
+		Scene scene = mScenes.get(mCurrentScene);
+		scene.update(deltaTime);
 	}
 
 	private void generateOutput() {
@@ -210,21 +129,29 @@ public class Game extends Canvas implements Runnable {
 
 		Graphics g = bs.getDrawGraphics();
 		
-		// clear background
-		g.setColor(Color.WHITE);
-		g.fillRect(0, 0, mWindow.getWidth(), mWindow.getHeight());
-		
-		for(int i=0; i<mSprites.size(); i++) {
-			mSprites.get(i).draw(g);
-		}
-
-		if(mGameOver) {
-			mGameOverItem.draw(g, mVictory);
-		}
-		
+		Scene scene = mScenes.get(mCurrentScene);
+		scene.generateOutput(g);
 		
 		g.dispose();
 		bs.show();
 		
 	}
+	
+	public int getWindowWidth() {
+		return mWindow.getWidth();
+	}
+	
+	public int getWindowHeight() {
+		return mWindow.getHeight();
+	}
+	
+	@Override
+	public void resize(int width, int height) {
+		mWindow._resize(width, height);
+	}
+	
+	public void terminate() {
+		mIsRunning = false;
+	}
+	
 }

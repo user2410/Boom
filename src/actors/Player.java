@@ -6,9 +6,9 @@ import java.awt.event.KeyEvent;
 
 import components.MoveComponent;
 import components.SpriteComponent;
-import main.Game;
+import scene.MainGameScene;
 
-public class Player extends Entity {
+public class Player extends GridEntity {
 	
 	public final int HEALTHBAR_Y = 5;
 	public final int HEALTHBAR_HEIGHT = 15;
@@ -21,8 +21,8 @@ public class Player extends Entity {
 	@SuppressWarnings("unused")
 	private SpriteComponent healthBar;
 	
-	public Player(Game game, Grid grid, Tile currentTile) {
-		super(game, grid, currentTile);
+	public Player(MainGameScene scene, Grid grid, Tile currentTile) {
+		super(scene, grid, currentTile);
 		mDirection = 2;
 		updateTexture();
 		mc = new MoveComponent(this);
@@ -81,7 +81,7 @@ public class Player extends Entity {
 	
 	public void setBomb() {
 		if(bombCooldown <= 0.0) {
-			new Bomb(getGame(), mGrid, this);
+			new Bomb((MainGameScene)getScene(), mGrid, this);
 			bombCooldown = 3.0;
 		}
 	}
@@ -118,7 +118,7 @@ public class Player extends Entity {
 			text = "player/khokho_right.png";
 			break;
 		}
-		mSprite.setTexture(getGame().getTexture(text));
+		mSprite.setTexture(getScene().getTexture(text));
 	}
 	
 	

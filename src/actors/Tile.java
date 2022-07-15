@@ -5,8 +5,8 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 import components.SpriteComponent;
-import main.Game;
 import math.Vector2;
+import scene.Scene;
 
 public class Tile extends Actor {
 
@@ -21,10 +21,10 @@ public class Tile extends Actor {
 	@SuppressWarnings("unused")
 	private SpriteComponent mCoverSprite;
 	private double mBlowTime;
-	private ArrayList<Entity> mEntities;
+	private ArrayList<GridEntity> mEntities;
 
-	public Tile(Game game, int num) {
-		super(game);
+	public Tile(Scene scene, int num) {
+		super(scene);
 		mTileNum = num;
 		mTileState = TileState.EDefault;
 		mBlocked = false;
@@ -84,15 +84,15 @@ public class Tile extends Actor {
 			text = "tiles/boxsatmain.png";
 			break;
 		}
-		mSprite.setTexture(getGame().getTexture(text));
+		mSprite.setTexture(getScene().getTexture(text));
 	}
 	
-	public void addEntity(Entity e) {
+	public void addEntity(GridEntity e) {
 		if(!mEntities.contains(e))
 			mEntities.add(e);
 	}
 	
-	public void removeEntity(Entity e) {
+	public void removeEntity(GridEntity e) {
 		mEntities.remove(e);
 	}
 
@@ -119,7 +119,7 @@ public class Tile extends Actor {
 	
 	public void blow() {
 		for(int i=0; i<mEntities.size(); i++) {
-			Entity e = mEntities.get(i);
+			GridEntity e = mEntities.get(i);
 			e.die();
 			try {
 				mEntities.remove(i--);
@@ -129,4 +129,7 @@ public class Tile extends Actor {
 		mBlowTime = 0.5;
 	}
 	
+	public void clear() {
+		mEntities.clear();
+	}
 }

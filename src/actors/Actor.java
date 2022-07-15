@@ -3,8 +3,8 @@ package actors;
 import java.util.ArrayList;
 
 import components.Component;
-import main.Game;
 import math.Vector2;
+import scene.Scene;
 
 public class Actor {
 
@@ -12,7 +12,7 @@ public class Actor {
 		EActive, EPaused, EDead
 	};
 	
-	private Game mGame;
+	private Scene mScene;
 	private State mState;
 	private Vector2 mPosition;
 	private Vector2 mOriginalSize;
@@ -21,14 +21,14 @@ public class Actor {
 	
 	private ArrayList<Component> mComponents;
 	
-	public Actor(Game game) {
+	public Actor(Scene scene) {
 		mState = State.EActive;
 		mPosition = Vector2.Zero();
 		mOriginalSize = null;
 		mScale = 1.0;
-		mGame = game;
+		mScene = scene;
 		mComponents = new ArrayList<>();
-		game.addActor(this);
+		scene.addActor(this);
 	}
 	
 	public void update(double deltaTime) {
@@ -70,8 +70,8 @@ public class Actor {
 		this.mScale = mScale;
 	}
 
-	public Game getGame() {
-		return mGame;
+	public Scene getScene() {
+		return mScene;
 	}
 
 	public Vector2 getOriginalSize() {
@@ -98,6 +98,6 @@ public class Actor {
 	
 	@Override
 	public void finalize() {
-		mGame.removeActor(this);
+		mScene.removeActor(this);
 	}
 }

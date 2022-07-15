@@ -3,10 +3,10 @@ package actors;
 import java.util.ArrayList;
 
 import components.MoveComponent;
-import main.Game;
 import math.Vector2;
+import scene.MainGameScene;
 
-public abstract class Monster extends Entity{
+public abstract class Monster extends GridEntity{
 
 	protected int mDirection;
 	protected MoveComponent mc;
@@ -14,8 +14,8 @@ public abstract class Monster extends Entity{
 	protected ArrayList<Tile> adjTiles;
 	private double attackCooldown;
 	
-	public Monster(Game game, Grid grid, Tile currentTile) {
-		super(game, grid, currentTile);
+	public Monster(MainGameScene scene, Grid grid, Tile currentTile) {
+		super(scene, grid, currentTile);
 		mDirection = 2;
 		updateTexture();
 		mc = new MoveComponent(this);

@@ -19,7 +19,7 @@ public class SpriteComponent extends Component {
 		mDrawOrder = 100;
 		mTexWidth = 0;
 		mTexHeight = 0;
-		owner.getGame().addSprite(this);
+		owner.getScene().addSprite(this);
 	}
 
 	public SpriteComponent(Actor owner, int drawOrder) {
@@ -69,6 +69,6 @@ public class SpriteComponent extends Component {
 	
 	@Override
 	public void finalize() {
-		mOwner.getGame().removeSprite(this);
+		mOwner.getScene().removeSprite(this);
 	}
 }
