@@ -12,6 +12,7 @@ import java.util.HashMap;
 
 import loader.GraphicsLoader;
 import scene.MainGameScene;
+import scene.MenuScene;
 import scene.Scene;
 
 @SuppressWarnings("serial")
@@ -74,6 +75,9 @@ public class Game extends Canvas implements Runnable {
 	}
 	
 	private boolean loadData() {
+//		Scene scene1 = new MenuScene(this);
+//		if(!scene1.init()) return false;
+//		mScenes.add(scene1);
 		Scene scene2 = new MainGameScene(this);
 		if(!scene2.init()) return false;
 		mScenes.add(scene2);

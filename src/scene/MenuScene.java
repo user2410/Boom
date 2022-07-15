@@ -1,6 +1,7 @@
 package scene;
 
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 
 import main.Game;
 
@@ -18,6 +19,11 @@ public class MenuScene extends Scene {
 	@Override
 	public boolean loadData() {
 		return false;
+	}
+	
+	@Override
+	public void processKeyboard(KeyEvent e) {
+		
 	}
 	
 	@Override
