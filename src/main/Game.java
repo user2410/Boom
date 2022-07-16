@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import loader.GraphicsLoader;
+import scene.HelpScene;
 import scene.MainGameScene;
 import scene.MenuScene;
 import scene.Scene;
@@ -39,7 +40,7 @@ public class Game extends Canvas implements Runnable {
 	}
 
 	public boolean init() {
-		mWindow = new Window("Boom2d", PREF_WIDTH, PREF_HEIGHT, this);
+		mWindow = new Window("2DBoomGame", PREF_WIDTH, PREF_HEIGHT, this);
 
 		addKeyListener(new KeyListener() {
 			@Override
@@ -75,14 +76,25 @@ public class Game extends Canvas implements Runnable {
 	}
 	
 	private boolean loadData() {
-//		Scene scene1 = new MenuScene(this);
-//		if(!scene1.init()) return false;
-//		mScenes.add(scene1);
+		
+		Scene scene1 = new MenuScene(this);
+		if(!scene1.init()) return false;
+		mScenes.add(scene1);
+		
 		Scene scene2 = new MainGameScene(this);
 		if(!scene2.init()) return false;
 		mScenes.add(scene2);
+		
+		Scene scene3 = new HelpScene(this);
+		if(!scene3.init()) return false;
+		mScenes.add(scene3);
+		
 		mCurrentScene = 0;
 		return true;
+	}
+	
+	public void setCurrentScene(int scene){
+		mCurrentScene = scene;
 	}
 	
 	public BufferedImage getTexture(String filename) {

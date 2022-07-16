@@ -29,7 +29,7 @@ public class MainGameScene extends Scene{
 
 	@Override
 	public boolean loadData() {
-		mGrid = Grid.makeGrid(this, "maps/map01.dat");
+		mGrid = Grid.makeGrid(this, "maps/map02.dat");
 		if(mGrid == null) {
 			return false;
 		}
@@ -102,14 +102,14 @@ class GameOver {
 	
 	public GameOver(Game game) {
 		mGame = game;
-		mReplayBtn = new GameOverButton(game, "playbutton.png");
+		mReplayBtn = new GameOverButton(game, "background/playbutton.png");
 	}
 	
 	public void setType(boolean win) {
 		if(win) {			
-			mGameOverImage = mGame.getTexture("victory.png");			
+			mGameOverImage = mGame.getTexture("background/victory.png");			
 		}else {
-			mGameOverImage = mGame.getTexture("gameover.png");
+			mGameOverImage = mGame.getTexture("background/gameover.png");
 		}
 	}
 	

@@ -82,7 +82,7 @@ public class Player extends GridEntity {
 	public void setBomb() {
 		if(bombCooldown <= 0.0) {
 			new Bomb((MainGameScene)getScene(), mGrid, this);
-			bombCooldown = 3.0;
+			bombCooldown = 1.0;
 		}
 	}
 	

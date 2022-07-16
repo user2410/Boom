@@ -167,7 +167,7 @@ public class Grid extends Actor{
 	
 	public synchronized void processKeyboard(KeyEvent e) {
 		switch(e.getKeyCode()) {
-		case KeyEvent.VK_SPACE: case KeyEvent.VK_ENTER:
+		case KeyEvent.VK_ENTER:
 			mPlayer.setBomb();
 			break;
 		default:

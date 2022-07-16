@@ -10,7 +10,7 @@ public class Bomb extends GridEntity{
 	
 	public Bomb(MainGameScene scene, Grid grid, Player player) {
 		super(scene, grid, player.getCurrentTile());
-		mTimeToLive = 3.0;
+		mTimeToLive = 1.0;
 		mSprite.setDrawOrder(98);
 		mSprite.setTexture(scene.getTexture("objects/bomb.gif"));
 	}
