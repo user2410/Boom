@@ -1,5 +1,10 @@
 #include <stdio.h>
 
+#define M 13
+#define N 15
+
+// read and write integers in little endian byte order
+
 int readInt(FILE* fp){
     int res;
     for(int i=1; i<=4; i++){
@@ -22,11 +27,10 @@ int main()
 {
     FILE* dat = fopen("map01.dat", "wb");
     // mxn map
-    const int m=13;
-    const int n=15;
-    writeInt(m, dat); writeInt(n, dat);
     
-    int arr[m][n] = {
+    writeInt(M, dat); writeInt(N, dat);
+    
+    int arr[M][N] = {
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         {0,1,1,1,1,1,0,0,0,1,1,1,1,1,0},
         {0,1,3,3,3,1,0,0,0,1,3,3,3,1,0},
@@ -41,8 +45,8 @@ int main()
         {0,1,1,1,1,1,0,0,0,1,1,1,1,1,0},
         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
     };
-    for(int i=0; i<m; i++){
-        for(int j=0; j<n; j++) writeInt(arr[i][j], dat);
+    for(int i=0; i<M; i++){
+        for(int j=0; j<N; j++) writeInt(arr[i][j], dat);
     }
     // player
     writeInt(0, dat); writeInt(0, dat);

@@ -17,12 +17,12 @@ public class HelpScene extends Scene {
 
 	@Override
 	public boolean init() {
-		return true;
+		return loadData();
 	}
 
 	@Override
 	public boolean loadData() {
-		return false;
+		return true;
 	}
 	
 	@Override

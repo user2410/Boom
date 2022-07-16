@@ -75,14 +75,7 @@ public abstract class Scene {
 		}
 		mPendingActors.clear();
 		
-		for(int i=0; i<mActors.size(); i++) {
-			Actor actor = mActors.get(i);
-			if(actor.getState() == Actor.State.EDead) {
-				try{
-					mActors.remove(i--);
-				}catch(Exception e){}
-			}
-		}
+		mActors.removeIf(actor -> actor.getState() == Actor.State.EDead);
 	}
 	
 	public void generateOutput(Graphics g) {
